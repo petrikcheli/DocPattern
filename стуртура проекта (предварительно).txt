@@ -1,0 +1,33 @@
+client/
+├── CMakeLists.txt
+├── main.cpp
+├── src/
+│   ├── core/
+│   │   ├── database.cpp
+│   │   ├── database.h
+│   │   ├── docxparser.cpp
+│   │   └── docxparser.h
+│   ├── ui/
+│   │   ├── mainwindow/
+│   │   │   ├── mainwindow.cpp
+│   │   │   ├── mainwindow.h
+│   │   │   └── mainwindow.ui
+│   │   └── pages/
+│   │       ├── templateuploadpage.cpp
+│   │       ├── templateuploadpage.h
+│   │       ├── templateeditpage.cpp
+│   │       └── templateeditpage.h
+│   ├── utils/
+│   │   ├── fileutils.cpp
+│   │   └── fileutils.h
+│   └── style/
+│       ├── main.qss
+│       └── icons/
+│           ├── add.png
+│           ├── edit.png
+│           └── delete.png
+├── tests/
+│   ├── api_tests.cpp
+│   └── database_tests.cpp
+└── data/
+    └── templates.db
