@@ -4,9 +4,13 @@
 #include <QFile>
 
 
+
+
 TemplateEditPage::TemplateEditPage(QWidget *parent)
     : QWidget{parent}
 {
+    pythonWorker = std::make_unique<PythonWorker>(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("python"));
+
     createRuleButton = new QPushButton("Добавить правило", this);
     saveButton = new QPushButton("Сохранить", this);
     textBrowserFile = new QTextBrowser(this);
@@ -47,7 +51,68 @@ TemplateEditPage::TemplateEditPage(QWidget *parent)
     //Сначала нужно скопировать куда-то File
     //Потом мне нужно преобразовать его в html
     //и потом выводим
-    QFile file("output.html");
+
+    // copyFileToNewDir();
+    // convertDocxToHtml();
+
+
+    // QFile file(fileName);
+    // file.open(QIODevice::ReadOnly);
+    // textBrowserFile->setHtml(file.readAll());
+}
+
+void TemplateEditPage::setFilePath(const QString &path)
+{
+    filePath = path;
+    qDebug() << "filePath = " << path;
+    fileName = filePath.split("/").back();
+
+    copyFileToNewDir();
+    QString dirHtml = convertDocxToHtml();
+
+
+    QFile file(dirHtml);
     file.open(QIODevice::ReadOnly);
     textBrowserFile->setHtml(file.readAll());
+}
+
+QString TemplateEditPage::convertDocxToHtml()
+{
+    //Тут нужно запустить python скрипт
+    // Пример 1 — обычный скрипт
+    QString dirDocx = QString::fromStdString(dirTemplates) + "/" + fileName.split('.').first() + "/" + fileName;
+    QString dirHtml = QString::fromStdString(dirTemplates) + "/" + fileName.split('.').first() + "/" + fileName.split('.').first() + ".html";
+
+    pythonWorker->runFirstScript({dirDocx, dirHtml});
+
+    return dirHtml;
+}
+
+void TemplateEditPage::copyFileToNewDir()
+{
+    try {
+        fs::path baseDir = dirTemplates;
+        subDir = baseDir / fileName.split('.').begin()->toStdString();
+
+        fs::create_directories(subDir);
+
+        qDebug() << "Папка создана";
+
+        fs::path source = filePath.toStdString();
+        fs::path destination = subDir / fileName.toStdString();
+
+        // qDebug() << "source = " << source.string();
+        // qDebug() << "destination = " << destination.string();
+
+        try {
+            fs::copy_file(source, destination, fs::copy_options::overwrite_existing);
+            qDebug() << "файл скопирован";
+        } catch(const fs::filesystem_error &e){
+            qDebug() << "Ошибка при создании файла: " << e.what();
+        }
+
+    } catch (const fs::filesystem_error &e) {
+        qDebug() << "Ошибка при создании папки: " << e.what();
+    }
+
 }

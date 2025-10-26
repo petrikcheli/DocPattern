@@ -45,6 +45,8 @@ file(GLOB_RECURSE UIS
     "${SRC_DIR}/ui/**/*.ui"
 )
 
+
+
 # -------------------------------------
 # Создание исполняемого файла
 # -------------------------------------
@@ -55,9 +57,15 @@ add_executable(${PROJECT_NAME}
 )
 
 # -------------------------------------
+# Подключение sqllite_modern_cpp
+# -------------------------------------
+target_include_directories(${PROJECT_NAME} PRIVATE ${SQLITE_MODERN_CPP_INCLUDE_DIRS})
+
+# -------------------------------------
 # Подключение библиотек
 # -------------------------------------
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    unofficial::sqlite3::sqlite3
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets
