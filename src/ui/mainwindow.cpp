@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     stack = new QStackedWidget(this);
     uploadPage = new TemplateUploadPage(this);
     editPage = new TemplateEditPage(this);
+    rulePage = new TemplateRulesPage(this);
 
     sideMenu->setViewMode(QListWidget::IconMode);
     sideMenu->setIconSize(QSize(40,40));
@@ -33,9 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     stack->addWidget(new QLabel("Изменить"));
     stack->addWidget(new QLabel("Удалить"));
     stack->addWidget(editPage);
-
-
-
+    stack->addWidget(rulePage);
 
     layout->addWidget(sideMenu);
     layout->addWidget(stack);
@@ -44,7 +43,30 @@ MainWindow::MainWindow(QWidget *parent)
         editPage->setFilePath(path);
         stack->setCurrentWidget(editPage);
     });
-    connect(sideMenu, &QListWidget::currentRowChanged, stack, &QStackedWidget::setCurrentIndex);
+
+    connect(editPage, &TemplateEditPage::createRuleButtonClicked, this, [=](){
+        stack->setCurrentWidget(rulePage);
+    });
+
+    // c
+    connect(editPage, &TemplateEditPage::backButtonClicked, this, [=]{
+        stack->setCurrentWidget(uploadPage);
+    });
+
+    connect(rulePage, &TemplateRulesPage::backClicked, this, [=]{
+        stack->setCurrentWidget(editPage);
+    });
+
+    connect(rulePage, &TemplateRulesPage::saveClicked, this, [=]{
+        editPage->updateRuleList();
+        stack->setCurrentWidget(editPage);
+    });
+
+    connect(sideMenu, &QListWidget::currentRowChanged,
+            stack, &QStackedWidget::setCurrentIndex);
+
+    connect(editPage, &TemplateEditPage::ruleSelected,
+            rulePage, &TemplateRulesPage::setRule);
     sideMenu->setCurrentRow(0);
 }
 

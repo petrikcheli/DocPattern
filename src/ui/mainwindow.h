@@ -5,6 +5,7 @@
 #include <QtWidgets>
 #include "templateuploadpage.h"
 #include "templateeditpage.h"
+#include "templaterulespage.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,5 +30,6 @@ private:
 
     TemplateUploadPage *uploadPage;
     TemplateEditPage *editPage;
+    TemplateRulesPage *rulePage;
 };
 #endif // MAINWINDOW_H

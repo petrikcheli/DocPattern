@@ -50,11 +50,15 @@ file(GLOB_RECURSE UIS
 # -------------------------------------
 # Создание исполняемого файла
 # -------------------------------------
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+
 add_executable(${PROJECT_NAME}
     ${SOURCES}
     ${HEADERS}
     ${UIS}
 )
+
+target_link_libraries(TemplateEditorApp PRIVATE Qt6::Widgets)
 
 # -------------------------------------
 # Подключение sqllite_modern_cpp
