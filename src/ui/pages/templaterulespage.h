@@ -11,14 +11,14 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 
-#include "database.h"
+#include "RulesManager.h"
 
 
 class TemplateRulesPage : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TemplateRulesPage(QWidget *parent = nullptr);
+    explicit TemplateRulesPage(std::shared_ptr<RulesManager> rulesManager, QWidget *parent = nullptr);
 
 
 signals:
@@ -29,7 +29,8 @@ public slots:
     void onMainFunctionChanged(int index);
     void onSaveClicked();
     //void onBackButtonClicked();
-    void setRule(std::shared_ptr<TemplateRule> r);
+    void setRule();
+    void onBackClicked();
 
 private:
     QLabel *headLabel;
@@ -45,7 +46,8 @@ private:
 
     QString selectText;
 
-    std::shared_ptr<TemplateRule> rule;
+    //std::shared_ptr<TemplateRule> rule;
+    std::shared_ptr<RulesManager> rulesManager;
 };
 
 #endif // TEMPLATERULESPAGE_H

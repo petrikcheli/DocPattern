@@ -3,28 +3,9 @@
 #include <vector>
 #include <optional>
 #include <sqlite_modern_cpp.h>
-
-struct TemplateData {
-    int id;
-    std::string name;
-    std::string directory;
-};
-
-struct TemplateFile {
-    int id;
-    std::string filename;
-    int template_id;
-};
-
-struct TemplateRule {
-    int id;
-    std::string name;
-    std::string function_name;
-    std::string additional_function;
-    std::string text_to_replace;
-    int text_position;
-    int template_id;
-};
+#include "TemplateRule.h"
+#include "TemplateData.h"
+#include "TemplateFile.h"
 
 class database
 {

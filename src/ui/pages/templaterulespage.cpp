@@ -1,8 +1,10 @@
 #include "TemplateRulesPage.h"
 
-TemplateRulesPage::TemplateRulesPage(QWidget *parent)
+TemplateRulesPage::TemplateRulesPage(std::shared_ptr<RulesManager> rulesManager, QWidget *parent)
     : QWidget(parent)
 {
+    this->rulesManager = rulesManager;
+
     headLabel = new QLabel("Что хотите сделать с этим выделенным текстом?");
     selectTextLabel = new QLabel("Тест");
 
@@ -28,6 +30,7 @@ TemplateRulesPage::TemplateRulesPage(QWidget *parent)
 
     connect(saveButton, &QPushButton::clicked, this, &TemplateRulesPage::onSaveClicked);
     connect(backButton, &QPushButton::clicked, this, &TemplateRulesPage::backClicked);
+    connect(backButton, &QPushButton::clicked, this, &TemplateRulesPage::onBackClicked);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(headLabel);
@@ -77,24 +80,31 @@ void TemplateRulesPage::onSaveClicked()
             qDebug() << "Пользователь не выбрал падеж";
             return;
         }
-        rule->additional_function = caseFunctionBox->currentText().toStdString();
+        //rulesManager->selectRule
+        rulesManager->selectRule->additional_function = caseFunctionBox->currentText().toStdString();
     }
 
-    rule->name = ruleNameEdit->text().toStdString();
-    rule->function_name = mainFunctionBox->currentText().toStdString();
+    rulesManager->selectRule->name = ruleNameEdit->text().toStdString();
+    rulesManager->selectRule->function_name = mainFunctionBox->currentText().toStdString();
 
+    rulesManager->addNewRule();
 
     emit saveClicked();
 }
 
-void TemplateRulesPage::setRule(std::shared_ptr<TemplateRule> r)
+void TemplateRulesPage::setRule()
 {
-    rule = r;
-    selectTextLabel->setText(QString::fromStdString(rule->text_to_replace));
+    selectTextLabel->setText(QString::fromStdString(rulesManager->selectRule->text_to_replace));
 
-    if(!rule->name.empty()){
-        ruleNameEdit->setText(QString::fromStdString(rule->name));
-        mainFunctionBox->setCurrentText(QString::fromStdString(rule->function_name));
-        caseFunctionBox->setCurrentText(QString::fromStdString(rule->additional_function));
+    if(!rulesManager->selectRule->name.empty()){
+        ruleNameEdit->setText(QString::fromStdString(rulesManager->selectRule->name));
+        mainFunctionBox->setCurrentText(QString::fromStdString(rulesManager->selectRule->function_name));
+        caseFunctionBox->setCurrentText(QString::fromStdString(rulesManager->selectRule->additional_function));
     }
+}
+
+void TemplateRulesPage::onBackClicked()
+{
+    rulesManager->cancelNewRule();
+    //rule.reset();
 }

@@ -15,7 +15,7 @@
 #include <filesystem>
 #include <vector>
 #include "PythonWorker.h"
-#include "database.h"
+#include "RulesManager.h"
 
 
 namespace fs = std::filesystem;
@@ -24,9 +24,9 @@ class TemplateEditPage : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TemplateEditPage(QWidget *parent = nullptr);
+    explicit TemplateEditPage(std::shared_ptr<RulesManager> rulesManager, QWidget *parent = nullptr);
     void setFilePath(const QString &path);
-    std::vector<std::shared_ptr<TemplateRule>>& getRules(){ return rules; };
+    //std::vector<std::shared_ptr<TemplateRule>>& getRules(){ return rules; };
 
 
 private:
@@ -52,8 +52,8 @@ signals:
     /// сигнал когда нажата кнопка назад
     // нужна для того, чтобы удалить данные которые не нужно сохранять а также возвращает на страницу выбора файла
     void backButtonClicked();
-    /// Сигнализирует о том, что выбрано новое правило
-    void ruleSelected(std::shared_ptr<TemplateRule> rule);
+    // /// Сигнализирует о том, что выбрано новое правило
+    // void ruleSelected(std::shared_ptr<TemplateRule> rule);
     /// сигнал для обновления списка
     void editRuleRequested(std::shared_ptr<TemplateRule> rule);
 
@@ -76,9 +76,8 @@ private:
     QString selectText;
     int startPosSelectText;
     int endPosSelectText;
-    // \n Хранит структуры правил, чтобы при нажатии кнопки сохранить занести все правила в базу данных
-    // \n не забыть еще дать id шаблона кажлому правилу
-    std::vector<std::shared_ptr<TemplateRule>> rules;
+
+    std::shared_ptr<RulesManager> rulesManager;
 };
 
 #endif // TEMPLATEEDITPAGE_H

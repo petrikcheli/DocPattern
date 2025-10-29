@@ -21,6 +21,7 @@ include_directories(
     ${SRC_DIR}/ui/mainwindow
     ${SRC_DIR}/ui/pages
     ${SRC_DIR}/utils
+    ${SRC_DIR}/models
 )
 
 # -------------------------------------
@@ -39,6 +40,7 @@ file(GLOB_RECURSE HEADERS
     "${SRC_DIR}/ui/*.h"
     "${SRC_DIR}/ui/**/*.h"
     "${SRC_DIR}/utils/*.h"
+    "${SRC_DIR}/models/*.h"
 )
 
 file(GLOB_RECURSE UIS

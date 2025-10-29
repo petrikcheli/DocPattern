@@ -4,11 +4,13 @@
 #include <QFile>
 #include <QTextCursor>
 #include <QTextDocumentFragment>
+#include <QSplitter>
 
-TemplateEditPage::TemplateEditPage(QWidget *parent)
+TemplateEditPage::TemplateEditPage(std::shared_ptr<RulesManager> rulesManager, QWidget *parent)
     : QWidget{parent}
 {
     pythonWorker = std::make_unique<PythonWorker>(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("python"));
+    this->rulesManager = rulesManager;
 
     createRuleButton = new QPushButton("Добавить правило", this);
     saveButton = new QPushButton("Сохранить", this);
@@ -25,12 +27,22 @@ TemplateEditPage::TemplateEditPage(QWidget *parent)
     rightLayout->addWidget(listRules);
 
     // Можно задать фиксированную ширину
-    listRules->setMaximumWidth(100);
+    listRules->setMaximumWidth(150);
 
-    // === Верхняя часть (левая и правая колонка) ===
-    auto *topLayout = new QHBoxLayout();
-    topLayout->addLayout(leftLayout, 3);   // вес 3 → занимает больше места
-    topLayout->addLayout(rightLayout, 1);  // вес 1 → уже
+    // // === Верхняя часть (левая и правая колонка) ===
+    // auto *topLayout = new QHBoxLayout();
+    // topLayout->addLayout(leftLayout, 3);   // вес 3 → занимает больше места
+    // topLayout->addLayout(rightLayout, 1);  // вес 1 → уже
+
+    QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
+    splitter->addWidget(textBrowserFile);
+    splitter->addWidget(listRules);
+
+    // Настраиваем начальные пропорции (например, 3 к 1)
+    QList<int> sizes;
+    sizes << 600 << 200; // ширина каждой панели в пикселях
+    splitter->setSizes(sizes);
+
 
     // === Нижняя часть: две кнопки по горизонтали ===
     auto *bottomLayout = new QHBoxLayout();
@@ -40,11 +52,16 @@ TemplateEditPage::TemplateEditPage(QWidget *parent)
     bottomLayout->addWidget(saveButton);
 
     // === Главный layout ===
+    // auto *mainLayout = new QVBoxLayout(this);
+    // mainLayout->addLayout(topLayout);
+    // mainLayout->addLayout(bottomLayout);
+    // mainLayout->setStretch(0, 1); // верхняя часть растягивается
+    // mainLayout->setStretch(1, 0); // нижняя — фиксированная
+
     auto *mainLayout = new QVBoxLayout(this);
-    mainLayout->addLayout(topLayout);
+    mainLayout->addWidget(splitter);
     mainLayout->addLayout(bottomLayout);
-    mainLayout->setStretch(0, 1); // верхняя часть растягивается
-    mainLayout->setStretch(1, 0); // нижняя — фиксированная
+    setLayout(mainLayout);
 
     setLayout(mainLayout);
 
@@ -149,9 +166,10 @@ void TemplateEditPage::createRuleButtonSlot()
     auto newRule = std::make_shared<TemplateRule>();
     newRule->text_to_replace = selectText.toStdString();
     newRule->text_position = startPosSelectText;
-    rules.push_back(newRule);
+    rulesManager->createNewRule(newRule);
+    //rules.push_back(newRule);
 
-    emit ruleSelected(newRule);
+    //emit ruleSelected(newRule);
     emit createRuleButtonClicked();
 }
 
@@ -167,14 +185,14 @@ void TemplateEditPage::updateRuleList()
 {
     listRules->clear();
 
-    for (int i = 0; i < rules.size(); ++i) {
-        auto rule = rules[i];
+    for (int i = 0; i < rulesManager->rules.size(); ++i) {
+        auto rule = rulesManager->rules[i];
 
         // === Контейнер для одной строки ===
         QWidget *itemWidget = new QWidget();
 
         // === Название правила ===
-        QLabel *ruleLabel = new QLabel(QString::fromStdString(rule->text_to_replace), itemWidget);
+        QLabel *ruleLabel = new QLabel(QString::fromStdString(rule->name), itemWidget);
         ruleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
         // === Кнопки ===
@@ -184,25 +202,28 @@ void TemplateEditPage::updateRuleList()
         deleteButton->setFixedWidth(32);
 
         // === Горизонтальный layout для строки ===
-        QHBoxLayout *layout = new QHBoxLayout(itemWidget);
+        QVBoxLayout *layout = new QVBoxLayout(itemWidget);
+        QHBoxLayout *layoutButton = new QHBoxLayout();
         layout->addWidget(ruleLabel);
-        layout->addWidget(editButton);
-        layout->addWidget(deleteButton);
-        layout->setContentsMargins(4, 2, 4, 2);
+        layoutButton->addWidget(editButton);
+        layoutButton->addWidget(deleteButton);
+        layout->addLayout(layoutButton);
+        //layout->setContentsMargins(4, 2, 4, 2);
 
         // === Создаём элемент списка ===
         QListWidgetItem *item = new QListWidgetItem(listRules);
         item->setSizeHint(itemWidget->sizeHint());
+        itemWidget->setFixedWidth(150);
         listRules->addItem(item);
         listRules->setItemWidget(item, itemWidget);
 
         // === Подключаем сигналы кнопок ===
         connect(editButton, &QPushButton::clicked, this, [this, i]() {
-            emit editRuleRequested(rules[i]);
+            emit editRuleRequested(rulesManager->rules[i]);
         });
 
         connect(deleteButton, &QPushButton::clicked, this, [this, i]() {
-            rules.erase(rules.begin() + i);
+            rulesManager->rules.erase(rulesManager->rules.begin() + i);
             updateRuleList();
         });
     }

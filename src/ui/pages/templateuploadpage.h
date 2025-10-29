@@ -9,7 +9,6 @@
 #include <QMimeData>
 #include <QPushButton>
 
-
 class TemplateUploadPage : public QWidget
 {
     Q_OBJECT

@@ -6,6 +6,7 @@
 #include "templateuploadpage.h"
 #include "templateeditpage.h"
 #include "templaterulespage.h"
+#include "RulesManager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -31,5 +32,8 @@ private:
     TemplateUploadPage *uploadPage;
     TemplateEditPage *editPage;
     TemplateRulesPage *rulePage;
+
+    std::shared_ptr<RulesManager> rulesManager;
+
 };
 #endif // MAINWINDOW_H

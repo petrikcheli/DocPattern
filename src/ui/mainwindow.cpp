@@ -11,12 +11,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(central);
 
+    rulesManager = std::make_shared<RulesManager>();
+
     layout = new QHBoxLayout(central);
     sideMenu = new QListWidget(this);
     stack = new QStackedWidget(this);
     uploadPage = new TemplateUploadPage(this);
-    editPage = new TemplateEditPage(this);
-    rulePage = new TemplateRulesPage(this);
+    editPage = new TemplateEditPage(rulesManager, this);
+    rulePage = new TemplateRulesPage(rulesManager, this);
 
     sideMenu->setViewMode(QListWidget::IconMode);
     sideMenu->setIconSize(QSize(40,40));
@@ -45,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     connect(editPage, &TemplateEditPage::createRuleButtonClicked, this, [=](){
+        rulePage->setRule();
         stack->setCurrentWidget(rulePage);
     });
 
@@ -65,8 +68,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(sideMenu, &QListWidget::currentRowChanged,
             stack, &QStackedWidget::setCurrentIndex);
 
-    connect(editPage, &TemplateEditPage::ruleSelected,
-            rulePage, &TemplateRulesPage::setRule);
+    // connect(editPage, &TemplateEditPage::ruleSelected,
+    //         rulePage, &TemplateRulesPage::setRule);
     sideMenu->setCurrentRow(0);
 }
 
