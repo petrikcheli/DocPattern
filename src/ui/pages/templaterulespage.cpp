@@ -89,6 +89,21 @@ void TemplateRulesPage::onSaveClicked()
 
     rulesManager->addNewRule();
 
+    qDebug() << "RulePage: onSaveClicked";
+
+    if(!rulesManager->selectRule){
+        qDebug() << "selectRule - nullptr";
+    }
+
+    qDebug() << "rule.id = " << rulesManager->selectRule->id;
+    qDebug() << "rule.name = " << rulesManager->selectRule->name;//.empty() ? "nullptr" : rulesManager->selectRule->name);
+    qDebug() << "rule.function_name = " << rulesManager->selectRule->function_name;
+    qDebug() << "rule.additional_function = " << rulesManager->selectRule->additional_function;
+    qDebug() << "rule.text_to_replace = " << rulesManager->selectRule->text_to_replace;
+    qDebug() << "rule.text_position = " << rulesManager->selectRule->text_position;
+    qDebug() << "rule.text_position = " << rulesManager->selectRule->template_id;
+
+    updateUi();
     emit saveClicked();
 }
 
@@ -105,6 +120,20 @@ void TemplateRulesPage::setRule()
 
 void TemplateRulesPage::onBackClicked()
 {
+    updateUi();
     rulesManager->cancelNewRule();
     //rule.reset();
+}
+
+void TemplateRulesPage::updateUi()
+{
+    // Сбрасываем все поля
+    ruleNameEdit->clear();                    // Название правила
+    mainFunctionBox->setCurrentIndex(0);      // Сбрасываем выбор функции на первую
+    caseFunctionBox->setCurrentIndex(0);      // Сбрасываем выбор падежа
+    selectTextLabel->setText("Тест");         // Можно поставить пустой текст или подсказку
+
+    // Показываем/скрываем элементы
+    caseLabel->setVisible(true);              // Если по умолчанию первая функция требует падежа
+    caseFunctionBox->setVisible(true);        // Показываем выбор падежа для первой функции
 }

@@ -7,6 +7,7 @@
 #include "templateeditpage.h"
 #include "templaterulespage.h"
 #include "RulesManager.h"
+#include "database.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -35,5 +36,6 @@ private:
 
     std::shared_ptr<RulesManager> rulesManager;
 
+    std::shared_ptr<DataBase> db;
 };
 #endif // MAINWINDOW_H

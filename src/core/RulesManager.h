@@ -11,11 +11,13 @@ class RulesManager
 public:
     RulesManager();
     void addRule(std::shared_ptr<TemplateRule> rule);
+    void updateRule(std::shared_ptr<TemplateRule> rule);
     void addNewRule();
     void deleteRule(std::shared_ptr<TemplateRule> rule);
     void createNewRule(std::shared_ptr<TemplateRule> rule);
     void cancelNewRule();
-    std::vector<std::shared_ptr<TemplateRule>>& geRule(int index);
+    void clearRule() {rules.clear();};
+    std::vector<std::shared_ptr<TemplateRule>>& geRules(){return rules;};
 
 public:
     std::shared_ptr<TemplateRule> selectRule;

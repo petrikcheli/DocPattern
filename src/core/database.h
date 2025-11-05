@@ -7,10 +7,10 @@
 #include "TemplateData.h"
 #include "TemplateFile.h"
 
-class database
+class DataBase
 {
 public:
-    database(const std::string& filename);
+    DataBase(const std::string& filename);
 
     int addTemplate(const std::string &name, const std::string &directory);
     void addTemplateFile(const std::string &filename, int template_id);

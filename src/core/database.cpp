@@ -1,11 +1,11 @@
 #include "database.h"
 
-database::database(const std::string &filename) : db_(filename)
+DataBase::DataBase(const std::string &filename) : db_(filename)
 {
     init_tables();
 }
 
-int database::addTemplate(const std::string &name, const std::string &directory)
+int DataBase::addTemplate(const std::string &name, const std::string &directory)
 {
     db_ << "INSERT INTO templates (name, directory) VALUES (?, ?);" << name << directory;
     int id = 0;
@@ -13,13 +13,13 @@ int database::addTemplate(const std::string &name, const std::string &directory)
     return id;
 }
 
-void database::addTemplateFile(const std::string &filename, int template_id)
+void DataBase::addTemplateFile(const std::string &filename, int template_id)
 {
     db_ << "INSERT INTO template_files (filename, template_id) VALUES (?, ?);"
         << filename << template_id;
 }
 
-void database::addRule(const TemplateRule &rule)
+void DataBase::addRule(const TemplateRule &rule)
 {
     db_ << "INSERT INTO template_rules "
            "(name, function_name, additional_function, text_to_replace, text_position, template_id) "
@@ -32,7 +32,7 @@ void database::addRule(const TemplateRule &rule)
         << rule.template_id;
 }
 
-std::vector<TemplateData> database::getTemplates()
+std::vector<TemplateData> DataBase::getTemplates()
 {
     std::vector<TemplateData> result;
     db_ << "SELECT id, name, directory FROM templates;"
@@ -42,7 +42,7 @@ std::vector<TemplateData> database::getTemplates()
     return result;
 }
 
-void database::init_tables()
+void DataBase::init_tables()
 {
     db_ << "CREATE TABLE IF NOT EXISTS templates ("
            "id INTEGER PRIMARY KEY AUTOINCREMENT, "

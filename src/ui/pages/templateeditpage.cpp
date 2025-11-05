@@ -5,12 +5,18 @@
 #include <QTextCursor>
 #include <QTextDocumentFragment>
 #include <QSplitter>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QLineEdit>
 
-TemplateEditPage::TemplateEditPage(std::shared_ptr<RulesManager> rulesManager, QWidget *parent)
+TemplateEditPage::TemplateEditPage(std::shared_ptr<RulesManager> rulesManager,
+                                   std::shared_ptr<DataBase> db,
+                                   QWidget *parent)
     : QWidget{parent}
 {
     pythonWorker = std::make_unique<PythonWorker>(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("python"));
     this->rulesManager = rulesManager;
+    this->db = db;
 
     createRuleButton = new QPushButton("Добавить правило", this);
     saveButton = new QPushButton("Сохранить", this);
@@ -106,7 +112,6 @@ void TemplateEditPage::setFilePath(const QString &path)
 QString TemplateEditPage::convertDocxToHtml()
 {
     //Тут нужно запустить python скрипт
-    // Пример 1 — обычный скрипт
     QString dirDocx = QString::fromStdString(dirTemplates) + "/" + fileName.split('.').first() + "/" + fileName;
     QString dirHtml = QString::fromStdString(dirTemplates) + "/" + fileName.split('.').first() + "/" + fileName.split('.').first() + ".html";
 
@@ -144,9 +149,88 @@ void TemplateEditPage::copyFileToNewDir()
 
 }
 
+void TemplateEditPage::updateUi(){
+    // Очистка текстового поля
+    textBrowserFile->clear();
+
+    // Очистка списка правил в UI
+    listRules->clear();
+
+    // Очистка правил в менеджере
+    if (rulesManager) {
+        rulesManager->clearRule();  // если этот метод очищает vector<shared_ptr<TemplateRule>>
+    }
+
+    // Очистка выделенного текста
+    selectText.clear();
+    startPosSelectText = 0;
+    endPosSelectText = 0;
+
+    // Очистка имени файла и пути
+    filePath.clear();
+    fileName.clear();
+    subDir.clear();
+
+    qDebug() << "UI и данные TemplateEditPage сброшены.";
+}
+
 void TemplateEditPage::saveSelectedText()
 {
-    return;
+    // тут нужно сохранить все правила и добавить id шаблона
+    if (!db) {
+        QMessageBox::critical(this, "Ошибка", "База данных не инициализирована.");
+        return;
+    }
+
+    bool ok;
+    QString templateName = QInputDialog::getText(this,
+                                                 tr("Создание шаблона"),
+                                                 tr("Введите имя шаблона:"),
+                                                 QLineEdit::Normal,
+                                                 "",
+                                                 &ok);
+
+    if (!ok || templateName.isEmpty()) {
+        QMessageBox::warning(this, tr("Ошибка"), tr("Имя шаблона не может быть пустым."));
+        return;
+    }
+
+    // 2. Создание TemplateData
+    TemplateData newTemplate;
+    newTemplate.name = templateName.toStdString();
+    newTemplate.directory = dirTemplates; // можешь указать реальный путь
+    int templateId = db->addTemplate(newTemplate.name, newTemplate.directory);
+
+    if (templateId <= 0) {
+        QMessageBox::critical(this, "Ошибка", "Не удалось сохранить шаблон в базу данных.");
+        return;
+    }
+
+    newTemplate.id = templateId;
+
+    QString dirDocx = QString::fromStdString(dirTemplates) + "/" + fileName.split('.').first() + "/" + fileName;
+    QString dirHtml = QString::fromStdString(dirTemplates) + "/" + fileName.split('.').first() + "/" + fileName.split('.').first() + ".html";
+
+    // 3. Сохранение файлов шаблона (если есть)
+    db->addTemplateFile(dirDocx.toStdString(), templateId);
+    db->addTemplateFile(dirHtml.toStdString(), templateId);
+    // for (auto &file : templateFiles) {
+    //     file.template_id = templateId;
+    //     db->addTemplateFile(file.filename, templateId);
+    // }
+
+    // 4. Сохранение правил (из rulesManager)
+    for (const auto &rule : rulesManager->geRules()) {
+        if (!rule) continue; // на случай, если указатель пустой
+        TemplateRule newRule = *rule;
+        newRule.template_id = templateId;
+        db->addRule(newRule);
+    }
+
+    QMessageBox::information(this, "Сохранено", "Шаблон, файлы и правила успешно сохранены.");
+
+    updateUi();
+    emit saveButtonClicked();
 }
 
 void TemplateEditPage::createRuleButtonSlot()
@@ -177,6 +261,8 @@ void TemplateEditPage::cancelCreation()
 {
     //TODO: тут будет логика создания черновика
     //(сейчас я не буду это реализовывать, потому что при одинаковом файле может удалиться папка которая нужна)
+    //поэтому тут обязательно нужно добавить логику с тем, что есть файл называется одинакого и то добавить номер к этому файлу
+    updateUi();
     emit backButtonClicked();
     return;
 }
@@ -219,6 +305,7 @@ void TemplateEditPage::updateRuleList()
 
         // === Подключаем сигналы кнопок ===
         connect(editButton, &QPushButton::clicked, this, [this, i]() {
+            rulesManager->updateRule(rulesManager->rules[i]);
             emit editRuleRequested(rulesManager->rules[i]);
         });
 

@@ -12,12 +12,13 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(central);
 
     rulesManager = std::make_shared<RulesManager>();
+    db = std::make_shared<DataBase>("test.db");
 
     layout = new QHBoxLayout(central);
     sideMenu = new QListWidget(this);
     stack = new QStackedWidget(this);
     uploadPage = new TemplateUploadPage(this);
-    editPage = new TemplateEditPage(rulesManager, this);
+    editPage = new TemplateEditPage(rulesManager, db, this);
     rulePage = new TemplateRulesPage(rulesManager, this);
 
     sideMenu->setViewMode(QListWidget::IconMode);
@@ -49,6 +50,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(editPage, &TemplateEditPage::createRuleButtonClicked, this, [=](){
         rulePage->setRule();
         stack->setCurrentWidget(rulePage);
+    });
+
+    connect(editPage, &TemplateEditPage::editRuleRequested, this, [=](){
+        rulePage->setRule();
+        stack->setCurrentWidget(rulePage);
+    });
+
+    connect(editPage, &TemplateEditPage::saveButtonClicked, this, [=](){
+        stack->setCurrentWidget(uploadPage);
     });
 
     // c

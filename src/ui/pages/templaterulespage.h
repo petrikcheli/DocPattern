@@ -33,6 +33,9 @@ public slots:
     void onBackClicked();
 
 private:
+    void updateUi();
+
+private:
     QLabel *headLabel;
     QLabel *selectTextLabel;
     QLineEdit *ruleNameEdit;

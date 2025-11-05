@@ -16,6 +16,7 @@
 #include <vector>
 #include "PythonWorker.h"
 #include "RulesManager.h"
+#include "database.h"
 
 
 namespace fs = std::filesystem;
@@ -24,7 +25,10 @@ class TemplateEditPage : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TemplateEditPage(std::shared_ptr<RulesManager> rulesManager, QWidget *parent = nullptr);
+    explicit TemplateEditPage(std::shared_ptr<RulesManager> rulesManager,
+                              std::shared_ptr<DataBase> db,
+                              QWidget *parent = nullptr);
+
     void setFilePath(const QString &path);
     //std::vector<std::shared_ptr<TemplateRule>>& getRules(){ return rules; };
 
@@ -35,6 +39,7 @@ private:
     // потом можно переименовать в название шаблона
     // еще нужно сохранять данные можно в бд допустим
     void copyFileToNewDir();
+    void updateUi();
 
 public slots:
     /// сохраняет текст который выбрал пользователь
@@ -57,6 +62,9 @@ signals:
     /// сигнал для обновления списка
     void editRuleRequested(std::shared_ptr<TemplateRule> rule);
 
+    /// копка которая сигнализирует о том, что шаблон сохранен
+    void saveButtonClicked();
+
 private:
     std::unique_ptr<PythonWorker> pythonWorker;
 
@@ -78,6 +86,8 @@ private:
     int endPosSelectText;
 
     std::shared_ptr<RulesManager> rulesManager;
+
+    std::shared_ptr<DataBase> db;
 };
 
 #endif // TEMPLATEEDITPAGE_H
