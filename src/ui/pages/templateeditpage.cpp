@@ -69,7 +69,7 @@ TemplateEditPage::TemplateEditPage(std::shared_ptr<RulesManager> rulesManager,
     mainLayout->addLayout(bottomLayout);
     setLayout(mainLayout);
 
-    setLayout(mainLayout);
+    //setLayout(mainLayout);
 
     // когда все правила подготовленны сохраняет все в базу данных и выходит на домашнюю станицу
     connect(saveButton, &QPushButton::clicked, this, &TemplateEditPage::saveSelectedText);

@@ -13,13 +13,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     rulesManager = std::make_shared<RulesManager>();
     db = std::make_shared<DataBase>("test.db");
+    pythonWorker = std::make_shared<PythonWorker>(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("python"));
 
     layout = new QHBoxLayout(central);
     sideMenu = new QListWidget(this);
     stack = new QStackedWidget(this);
+
     uploadPage = new TemplateUploadPage(this);
     editPage = new TemplateEditPage(rulesManager, db, this);
     rulePage = new TemplateRulesPage(rulesManager, this);
+
+    generatorSearchPage = new TemplateGeneratorSearch(db, pythonWorker, this);
 
     sideMenu->setViewMode(QListWidget::IconMode);
     sideMenu->setIconSize(QSize(40,40));
@@ -32,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     sideMenu->addItem(new QListWidgetItem(QIcon("icons/изменить.png"), ""));
     sideMenu->addItem(new QListWidgetItem(QIcon("icons/удалить.png"), ""));
 
-    stack->addWidget(new QLabel("Добро пожаловать"));
+    stack->addWidget(generatorSearchPage);
     stack->addWidget(uploadPage);
     stack->addWidget(new QLabel("Изменить"));
     stack->addWidget(new QLabel("Удалить"));

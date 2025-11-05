@@ -42,6 +42,32 @@ std::vector<TemplateData> DataBase::getTemplates()
     return result;
 }
 
+std::vector<TemplateFile> DataBase::getTemplateFiles(int template_id)
+{
+    std::vector<TemplateFile> result;
+    db_ << "SELECT id, filename, template_id FROM template_files WHERE template_id = ?;"
+        << template_id
+        >> [&](int id, std::string filename, int tid) {
+              result.push_back({id, filename, tid});
+          };
+    return result;
+}
+
+std::vector<TemplateRule> DataBase::getTemplateRules(int template_id)
+{
+    std::vector<TemplateRule> result;
+    db_ << "SELECT id, name, function_name, additional_function, text_to_replace, text_position, template_id "
+           "FROM template_rules WHERE template_id = ?;"
+        << template_id
+        >> [&](int id, std::string name, std::string fname, std::string addfun,
+               std::string text, int pos, int tid) {
+              result.push_back({id, name, fname, addfun, text, pos, tid});
+          };
+    return result;
+}
+
+
+
 void DataBase::init_tables()
 {
     db_ << "CREATE TABLE IF NOT EXISTS templates ("

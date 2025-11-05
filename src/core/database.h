@@ -17,6 +17,8 @@ public:
     void addRule(const TemplateRule &rule);
 
     std::vector<TemplateData> getTemplates();
+    std::vector<TemplateFile> getTemplateFiles(int template_id);
+    std::vector<TemplateRule> getTemplateRules(int template_id);
 
 private:
     sqlite::database db_;

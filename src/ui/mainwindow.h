@@ -3,9 +3,16 @@
 
 #include <QMainWindow>
 #include <QtWidgets>
+
+//страницы для создания шаблонов
 #include "templateuploadpage.h"
 #include "templateeditpage.h"
 #include "templaterulespage.h"
+
+//страницы для генерации по шаблонам
+#include "TemplateGeneratorSearch.h"
+
+//вспомогательные классы
 #include "RulesManager.h"
 #include "database.h"
 
@@ -34,8 +41,12 @@ private:
     TemplateEditPage *editPage;
     TemplateRulesPage *rulePage;
 
+    TemplateGeneratorSearch *generatorSearchPage;
+
     std::shared_ptr<RulesManager> rulesManager;
 
     std::shared_ptr<DataBase> db;
+
+    std::shared_ptr<PythonWorker> pythonWorker;
 };
 #endif // MAINWINDOW_H

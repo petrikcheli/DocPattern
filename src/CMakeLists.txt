@@ -20,6 +20,7 @@ include_directories(
     ${SRC_DIR}/ui
     ${SRC_DIR}/ui/mainwindow
     ${SRC_DIR}/ui/pages
+    ${SRC_DIR}/ui/pages/generator_pages
     ${SRC_DIR}/utils
     ${SRC_DIR}/models
 )
@@ -32,6 +33,7 @@ file(GLOB_RECURSE SOURCES
     "${SRC_DIR}/core/*.cpp"
     "${SRC_DIR}/ui/*.cpp"
     "${SRC_DIR}/ui/**/*.cpp"
+    "${SRC_DIR}/ui/pages/generator_pages/*.cpp"
     "${SRC_DIR}/utils/*.cpp"
 )
 
@@ -39,6 +41,7 @@ file(GLOB_RECURSE HEADERS
     "${SRC_DIR}/core/*.h"
     "${SRC_DIR}/ui/*.h"
     "${SRC_DIR}/ui/**/*.h"
+    "${SRC_DIR}/ui/pages/generator_pages/*.h"
     "${SRC_DIR}/utils/*.h"
     "${SRC_DIR}/models/*.h"
 )
