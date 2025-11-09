@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     rulePage = new TemplateRulesPage(rulesManager, this);
 
     generatorSearchPage = new TemplateGeneratorSearch(db, pythonWorker, this);
+    generatorBuildPage = new TemplateGeneratorBuild(db, this);
 
     sideMenu->setViewMode(QListWidget::IconMode);
     sideMenu->setIconSize(QSize(40,40));
@@ -40,8 +41,11 @@ MainWindow::MainWindow(QWidget *parent)
     stack->addWidget(uploadPage);
     stack->addWidget(new QLabel("Изменить"));
     stack->addWidget(new QLabel("Удалить"));
+
     stack->addWidget(editPage);
     stack->addWidget(rulePage);
+
+    stack->addWidget(generatorBuildPage);
 
     layout->addWidget(sideMenu);
     layout->addWidget(stack);
@@ -81,6 +85,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(sideMenu, &QListWidget::currentRowChanged,
             stack, &QStackedWidget::setCurrentIndex);
+
+    connect(generatorSearchPage, &TemplateGeneratorSearch::selectTemplate, this, [=](int id){
+        generatorBuildPage->setTemplateId(id);
+        stack->setCurrentWidget(generatorBuildPage);
+    });
+
+    connect(generatorBuildPage, &TemplateGeneratorBuild::backButtonClicked, this, [=]{
+        stack->setCurrentWidget(generatorSearchPage);
+    });
 
     // connect(editPage, &TemplateEditPage::ruleSelected,
     //         rulePage, &TemplateRulesPage::setRule);

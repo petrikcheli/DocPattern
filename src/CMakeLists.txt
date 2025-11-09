@@ -57,6 +57,7 @@ file(GLOB_RECURSE UIS
 # -------------------------------------
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 add_executable(${PROJECT_NAME}
     ${SOURCES}
@@ -64,6 +65,8 @@ add_executable(${PROJECT_NAME}
     ${UIS}
 )
 
+
+target_link_libraries(DocPattern PRIVATE Qt6::Widgets)
 
 #target_link_libraries(DocPattern PRIVATE Qt6::Widgets)
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)

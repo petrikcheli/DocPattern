@@ -24,6 +24,7 @@ public:
                                      QWidget *parent = nullptr);
 
 signals:
+    void selectTemplate(int idTemplate);
 
 private:
     void updateTemplates(const std::vector<TemplateData> &vecTemplateData);

@@ -11,6 +11,7 @@
 
 //страницы для генерации по шаблонам
 #include "TemplateGeneratorSearch.h"
+#include "TemplateGeneratorBuild.h"
 
 //вспомогательные классы
 #include "RulesManager.h"
@@ -42,6 +43,7 @@ private:
     TemplateRulesPage *rulePage;
 
     TemplateGeneratorSearch *generatorSearchPage;
+    TemplateGeneratorBuild *generatorBuildPage;
 
     std::shared_ptr<RulesManager> rulesManager;
 

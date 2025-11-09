@@ -60,6 +60,12 @@ void TemplateGeneratorSearch::updateTemplates(const std::vector<TemplateData> &v
 
         listTemplate->addItem(item);
         listTemplate->setItemWidget(item, itemWidget);
+
+        int idTemplateLambda = vecTemplateData.at(i).id;
+
+        connect(selectButton, &QPushButton::clicked, this, [this, idTemplateLambda](){
+            emit selectTemplate(idTemplateLambda);
+        });
     }
 }
 
